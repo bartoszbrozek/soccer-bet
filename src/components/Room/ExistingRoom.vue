@@ -1,9 +1,21 @@
 <template>
-  <div>EXISTING ROOM</div>
+  <div>
+    <h2>List of existing rooms</h2>
+    <ExistingRoomsTable></ExistingRoomsTable>
+  </div>
 </template>
 
 <script>
+import { mapState, mapActions, mapGetters } from "vuex";
+import ExistingRoomsTable from "./Tables/ExistingRoomsTable";
+
 export default {
-  name: "ExistingRoom"
+  name: "ExistingRoom",
+  components: {
+    ExistingRoomsTable
+  },
+  data() {
+    return {};
+  }
 };
 </script>

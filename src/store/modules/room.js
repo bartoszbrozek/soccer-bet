@@ -9,13 +9,27 @@ const state = {
     name: "",
     password: "",
     description: "",
-    isAddingNewRoom: false
+    isAddingNewRoom: false,
+
+    // Available Rooms
+    rooms: []
 }
 
 // getters
 const getters = {
     isAddingNewRoom: (state) => {
         return state.isAddingNewRoom
+    },
+    getRooms: (state) => {
+        var obj = state.rooms
+
+        var rooms = Object.keys(obj).map(function (key) {
+            return obj[key];
+        });
+
+        console.log(rooms)
+
+        return rooms
     }
 }
 
@@ -40,9 +54,22 @@ const actions = {
             if (error) {
 
             } else {
-              vm.$router.push("/room/existing")
+                vm.$router.push("/room/existing")
             }
             console.log(error)
+        });
+    },
+
+    getRooms({
+        commit
+    }) {
+        // Listen for changes
+        var rooms = Firebase.database().ref('rooms');
+        rooms.on('value', function (snapshot) {
+            console.log("ROOMS UPDATE", rooms)
+            console.log("SNAPSHOT", snapshot)
+
+            commit("updateRooms", snapshot.val())
         });
     }
 }
@@ -60,6 +87,9 @@ const mutations = {
     },
     isAddingNewRoom(state, value) {
         state.isAddingNewRoom = value
+    },
+    updateRooms(state, rooms) {
+        state.rooms = rooms
     }
 }
 
