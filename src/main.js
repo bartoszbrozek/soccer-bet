@@ -51,7 +51,7 @@ router.beforeEach((to, from, next) => {
       return
     }
   }
-
+console.log("REDIRECTING", to)
   next()
 })
 // VUE RENDER

@@ -40,11 +40,14 @@ const actions = {
                 // The signed-in user info.
                 var facebookUser = result.user;
 
+                console.log("USER DATA", facebookUser)
+
                 if (facebookUser) {
                     commit('setUser', {
                         email: facebookUser.email,
                         photoURL: facebookUser.photoURL,
-                        displayName: facebookUser.displayName
+                        displayName: facebookUser.displayName,
+                        uid: facebookUser.uid
                     })
                     commit('setToken', token)
                     //vm.$router.push("/homepage");
@@ -82,7 +85,8 @@ const actions = {
                         commit('setUser', {
                             email: user.email,
                             photoURL: user.photoURL,
-                            displayName: user.displayName
+                            displayName: user.displayName,
+                            uid: user.uid
                         })
                         commit('setToken', user.refreshToken)
                     }

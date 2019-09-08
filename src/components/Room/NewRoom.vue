@@ -1,9 +1,14 @@
 <template>
-  <div>NEW ROOM</div>
+  <div>
+      <h3>Create a New Room</h3>
+      <NewRoomForm></NewRoomForm>
+  </div>
 </template>
 
 <script>
+import NewRoomForm from './Forms/NewRoomForm'
 export default {
-  name: "NewRoom"
+  name: "NewRoom",
+  components: {NewRoomForm}
 };
 </script>
