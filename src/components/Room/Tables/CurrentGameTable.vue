@@ -26,19 +26,11 @@
       aria-current-label="Current page"
     >
       <template slot-scope="props">
-        <b-table-column field="id" label="Name" sortable>{{ props.row.name }}</b-table-column>
+        <b-table-column field="id" label="User" sortable>{{ props.row.user.displayName }}</b-table-column>
 
-        <b-table-column field="uid" label="Created By" sortable>{{ props.row.user.displayName }}</b-table-column>
+        <b-table-column field="uid" label="First Minute" sortable>{{ props.row.firstMinute }}</b-table-column>
 
-        <b-table-column
-          field="uid"
-          label="Created At"
-          sortable
-        >{{ new Date(props.row.timestamp).toLocaleDateString()}}</b-table-column>
-
-        <b-table-column label="Actions">
-          <b-button type="is-link" tag="router-link" v-bind:to="'/room/' + props.row.roomID">Open</b-button>
-        </b-table-column>
+        <b-table-column field="uid" label="Second Minute" sortable>{{ props.row.secondMinute }}</b-table-column>
       </template>
     </b-table>
   </section>
@@ -60,12 +52,12 @@ export default {
       perPage: 10
     };
   },
+  props: ["id"],
   mounted: function() {
-    this.$store.dispatch("room/getRooms");
+    this.$store.dispatch("room/getBets", this.id);
   },
-  methods: mapActions("room", ["getRooms"]),
   computed: mapGetters({
-    data: "room/getRooms"
+    data: "room/getBets"
   })
 };
 </script>

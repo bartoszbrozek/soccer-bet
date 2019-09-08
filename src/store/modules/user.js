@@ -4,7 +4,12 @@ import {
 } from '@/main'
 
 const state = {
-    user: [],
+    user: {
+        email: "",
+        displayName: "",
+        uid: "",
+        photoURL: ""
+    },
     token: null,
     isLogging: false,
     error: null
@@ -13,7 +18,6 @@ const state = {
 // getters
 const getters = {
     getData: (state) => {
-        console.log(state)
         return state.user
     },
     getToken: (state) => {
@@ -39,8 +43,6 @@ const actions = {
                 var token = result.credential.accessToken;
                 // The signed-in user info.
                 var facebookUser = result.user;
-
-                console.log("USER DATA", facebookUser)
 
                 if (facebookUser) {
                     commit('setUser', {
@@ -81,7 +83,6 @@ const actions = {
             firebase.auth().onAuthStateChanged((user) => {
                 if (user) {
                     if (user) {
-                        console.log(user)
                         commit('setUser', {
                             email: user.email,
                             photoURL: user.photoURL,

@@ -5,6 +5,7 @@ import Login from './components/Login'
 import HomePage from './components/HomePage'
 import NewRoom from './components/Room/NewRoom'
 import ExistingRoom from './components/Room/ExistingRoom'
+import GameRoom from './components/Room/GameRoom'
 import Buefy from 'buefy'
 import 'buefy/dist/buefy.css'
 import VueRouter from 'vue-router'
@@ -36,6 +37,11 @@ const routes = [{
   {
     path: '/room/existing',
     component: ExistingRoom
+  },
+  {
+    path: '/room/:id',
+    component: GameRoom,
+    props: true
   }
 ]
 
@@ -51,7 +57,6 @@ router.beforeEach((to, from, next) => {
       return
     }
   }
-console.log("REDIRECTING", to)
   next()
 })
 // VUE RENDER

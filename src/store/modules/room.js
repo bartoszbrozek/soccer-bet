@@ -12,7 +12,17 @@ const state = {
     isAddingNewRoom: false,
 
     // Available Rooms
-    rooms: []
+    rooms: [],
+
+    // Game Data
+    firstMinute: 0,
+    secondMinute: 0,
+    isAcceptingMinutes: false,
+    currentRoom: {
+        name: "",
+        description: ""
+    },
+    bets: {}
 }
 
 // getters
@@ -27,9 +37,45 @@ const getters = {
             return obj[key];
         });
 
-        console.log(rooms)
-
         return rooms
+    },
+    isAcceptingMinutes: (state) => {
+        return state.isAcceptingMinutes
+    },
+    getRoom: (state) => {
+        return state.currentRoom
+    },
+    getBets: (state) => {
+        var obj = state.bets
+
+        var bets = Object.keys(obj).map(function (key) {
+            return obj[key];
+        });
+
+        console.log("CURRENT BETs", state.bets)
+
+        return bets
+    },
+    getMyBet: (state) => {
+        var obj = state.bets
+
+        var bets = Object.keys(obj).map(function (key) {
+            return obj[key];
+        });
+
+        var user = vm.$store.getters['user/getData']
+        var myBet = bets.filter(bet => {
+            return bet.user.uid === user.uid
+        });
+
+
+        if (myBet && typeof myBet[0] !== "undefined") {
+            myBet = myBet[0]
+        } else {
+            myBet = []
+        }
+
+        return myBet;
     }
 }
 
@@ -50,7 +96,7 @@ const actions = {
             timestamp: Date.now(),
             uid: user.uid
         }, error => {
-            commit("isAddingNewRoom", true)
+            commit("isAddingNewRoom", false)
 
             if (error) {
                 console.log(error)
@@ -85,14 +131,77 @@ const actions = {
                 var availableRooms = Object.keys(snapshotRooms).map(function (key) {
                     let uid = snapshotRooms[key].uid
                     snapshotRooms[key].user = users[uid]
+                    snapshotRooms[key].roomID = key
                     return snapshotRooms[key];
                 });
 
                 commit("updateRooms", availableRooms)
             });
         });
+    },
 
+    createBet({
+        commit,
+        rootState
+    }, roomID) {
+        commit("isAcceptingMinutes", true)
 
+        var user = rootState.user.user
+
+        Firebase.database().ref('bets/' + roomID + '/' + user.uid).set({
+            firstMinute: state.firstMinute,
+            secondMinute: state.secondMinute,
+        }, error => {
+            commit("isAcceptingMinutes", false)
+
+            if (error) {
+                console.log(error)
+            } else {
+                // Also, add a new user
+                Firebase.database().ref('users/' + user.uid).set(user, error => {
+                    if (error) {
+                        console.log(error)
+                    }
+                });
+            }
+
+        });
+    },
+
+    getRoom({
+        commit,
+        rootState
+    }, roomID) {
+        var roomsTable = Firebase.database().ref('rooms');
+        roomsTable.child(roomID).on('value', function (snapshot) {
+            commit("setRoom", snapshot.val())
+        });
+    },
+    getBets({
+        commit,
+        rootState
+    }, roomID) {
+        commit("setBets", [])
+        var betsTable = Firebase.database().ref('bets');
+        var usersTable = Firebase.database().ref('users');
+
+        usersTable.once('value').then(function (snapshot) {
+            var users = snapshot.val()
+
+            betsTable.child(roomID).on('value', function (betsSnapshoot) {
+                var bets = betsSnapshoot.val()
+
+                if (bets) {
+                    var currentBets = Object.keys(bets).map(function (key) {
+                        let uid = key
+                        bets[key].user = users[uid]
+                        return bets[key];
+                    });
+
+                    commit("setBets", currentBets)
+                }
+            })
+        })
     }
 }
 
@@ -112,7 +221,22 @@ const mutations = {
     },
     updateRooms(state, rooms) {
         state.rooms = rooms
-    }
+    },
+    setRoom(state, room) {
+        state.currentRoom = room
+    },
+    setBets(state, room) {
+        state.bets = room
+    },
+    isAcceptingMinutes(state, value) {
+        state.isAcceptingMinutes = value
+    },
+    updateFirstMinute(state, value) {
+        state.firstMinute = value
+    },
+    updateSecondMinute(state, value) {
+        state.secondMinute = value
+    },
 }
 
 export default {
