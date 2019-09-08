@@ -43,6 +43,17 @@ const router = new VueRouter({
   routes
 })
 
+router.beforeEach((to, from, next) => {
+  var user = store.getters['user/getData']
+  if (!user || !user.email) {
+    if (to.path !== "/login") {
+      next("/login")
+      return
+    }
+  }
+
+  next()
+})
 // VUE RENDER
 const vm = new Vue({
   router,
@@ -52,6 +63,8 @@ const vm = new Vue({
   },
   render: h => h(App),
 }).$mount('#app')
+
+
 
 export {
   vm

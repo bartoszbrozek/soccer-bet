@@ -5,14 +5,13 @@
         <template slot="brand">
           <b-navbar-item tag="router-link" :to="{ path: '/' }">
             <img
-              src="https://raw.githubusercontent.com/buefy/buefy/dev/static/img/buefy-logo.png"
+              src="https://cdn.shopify.com/s/files/1/1061/1924/products/Poop_Emoji_7b204f05-eec6-4496-91b1-351acc03d2c7_large.png"
               alt="Lightweight UI components for Vue.js based on Bulma"
             />
           </b-navbar-item>
         </template>
         <template slot="start">
           <b-navbar-item tag="router-link" to="/homepage" type="is-link">Homepage</b-navbar-item>
-          <b-navbar-item href="#">Documentation</b-navbar-item>
           <b-navbar-dropdown label="Info">
             <b-navbar-item href="#">About</b-navbar-item>
             <b-navbar-item href="#">Contact</b-navbar-item>
@@ -20,7 +19,7 @@
         </template>
 
         <!-- USER LOGGED IN -->
-        <template slot="end" v-if="user">
+        <template slot="end" v-if="user && user.email">
           <b-navbar-item tag="div">
             <span>Welcome, {{user.displayName}}</span>
             <div class="buttons">

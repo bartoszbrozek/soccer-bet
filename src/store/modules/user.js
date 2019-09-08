@@ -47,7 +47,7 @@ const actions = {
                         displayName: facebookUser.displayName
                     })
                     commit('setToken', token)
-                    vm.$router.push("/homepage");
+                    //vm.$router.push("/homepage");
                 }
             })
             .catch(function (error) {
@@ -88,10 +88,6 @@ const actions = {
                     }
                     if (vm.$router.currentRoute.path !== "/homepage") {
                         vm.$router.push("/homepage")
-                    }
-                } else {
-                    if (vm.$router.currentRoute.path !== "/login") {
-                        vm.$router.push("/login")
                     }
                 }
             });
