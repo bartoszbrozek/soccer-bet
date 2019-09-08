@@ -40,37 +40,59 @@ const actions = {
         rootState
     }) {
         commit("isAddingNewRoom", true)
-        var userID = rootState.user.user.uid
+        var user = rootState.user.user
 
         var newRoomID = Firebase.database().ref().child('rooms').push().key;
         Firebase.database().ref('rooms/' + newRoomID).set({
             name: state.name,
             password: state.password,
             description: state.description,
-            uid: userID
+            timestamp: Date.now(),
+            uid: user.uid
         }, error => {
             commit("isAddingNewRoom", true)
 
             if (error) {
-
+                console.log(error)
             } else {
-                vm.$router.push("/room/existing")
+                // Also, add a new user
+                Firebase.database().ref('users/' + user.uid).set(user, error => {
+                    if (error) {
+                        console.log(error)
+                    } else {
+                        vm.$router.push("/room/existing")
+                    }
+                });
             }
-            console.log(error)
+
         });
     },
 
     getRooms({
         commit
     }) {
-        // Listen for changes
-        var rooms = Firebase.database().ref('rooms');
-        rooms.on('value', function (snapshot) {
-            console.log("ROOMS UPDATE", rooms)
-            console.log("SNAPSHOT", snapshot)
 
-            commit("updateRooms", snapshot.val())
+        // Join two tables and Listen for changes
+        var rooms = Firebase.database().ref('rooms');
+        var users = Firebase.database().ref('users');
+
+        users.once('value').then(function (snapshot) {
+            var users = snapshot.val()
+
+            rooms.on('value', function (snapshot) {
+                let snapshotRooms = snapshot.val()
+
+                var availableRooms = Object.keys(snapshotRooms).map(function (key) {
+                    let uid = snapshotRooms[key].uid
+                    snapshotRooms[key].user = users[uid]
+                    return snapshotRooms[key];
+                });
+
+                commit("updateRooms", availableRooms)
+            });
         });
+
+
     }
 }
 
