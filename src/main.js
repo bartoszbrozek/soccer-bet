@@ -3,11 +3,12 @@ import Vue from 'vue'
 import App from './App.vue'
 import Login from './components/Login'
 import HomePage from './components/HomePage'
+import NewRoom from './components/Room/NewRoom'
+import ExistingRoom from './components/Room/ExistingRoom'
 import Buefy from 'buefy'
 import 'buefy/dist/buefy.css'
 import VueRouter from 'vue-router'
 import store from './store'
-import Firebase from './helpers/firebase'
 
 Vue.config.productionTip = false
 
@@ -27,6 +28,14 @@ const routes = [{
   {
     path: '/login',
     component: Login
+  },
+  {
+    path: '/room/new',
+    component: NewRoom
+  },
+  {
+    path: '/room/existing',
+    component: ExistingRoom
   }
 ]
 
@@ -39,9 +48,11 @@ const vm = new Vue({
   router,
   store,
   create() {
-    store.commit("user/checkLoginStatus")
+
   },
   render: h => h(App),
 }).$mount('#app')
 
-export {vm}
+export {
+  vm
+}

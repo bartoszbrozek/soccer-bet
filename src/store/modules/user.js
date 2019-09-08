@@ -1,16 +1,19 @@
 import Firebase from '../../helpers/firebase'
-import { vm } from '@/main'
+import {
+    vm
+} from '@/main'
 
 const state = {
     user: [],
     token: null,
     isLogging: false,
-    //error: null
+    error: null
 }
 
 // getters
 const getters = {
     getData: (state) => {
+        console.log(state)
         return state.user
     },
     getToken: (state) => {
@@ -23,7 +26,9 @@ const getters = {
 
 // actions
 const actions = {
-    handleLogin({ commit }) {
+    handleLogin({
+        commit
+    }) {
         commit('setLoggingStatus', true)
         const FacebookProvider = Firebase.providers.Facebook;
 
@@ -53,17 +58,45 @@ const actions = {
                 commit('setLoggingStatus', false)
             });
     },
-    checkUserStatus({ commit, state }) {
-        return new Promise((resolve, reject) => {
-          firebase.auth().onAuthStateChanged((user) => {
-            if (user) {
-                vm.$router.push("/homepage")
-              } else {
+    handleLogout({
+        commit
+    }) {
+        Firebase.firebase.auth().signOut().then(function () {
+            commit("setUser", null)
+            if (vm.$router.currentRoute.path !== "/login") {
                 vm.$router.push("/login")
-              }
-          });
+            }
+        }).catch(function (error) {
+            // An error happened.
         });
-      },
+    },
+    checkUserStatus({
+        commit,
+        state
+    }) {
+        return new Promise((resolve, reject) => {
+            firebase.auth().onAuthStateChanged((user) => {
+                if (user) {
+                    if (user) {
+                        console.log(user)
+                        commit('setUser', {
+                            email: user.email,
+                            photoURL: user.photoURL,
+                            displayName: user.displayName
+                        })
+                        commit('setToken', user.refreshToken)
+                    }
+                    if (vm.$router.currentRoute.path !== "/homepage") {
+                        vm.$router.push("/homepage")
+                    }
+                } else {
+                    if (vm.$router.currentRoute.path !== "/login") {
+                        vm.$router.push("/login")
+                    }
+                }
+            });
+        });
+    },
 }
 
 // mutations
@@ -76,8 +109,7 @@ const mutations = {
     },
     setToken(state, token) {
         state.token = token
-    }
-    ,
+    },
     setError(state, error) {
         state.error = error
     }

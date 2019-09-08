@@ -12,7 +12,9 @@ export default {
   data() {
     return {};
   },
-  mounted: function() {},
+  mounted: function() {
+    this.$store.dispatch("user/checkUserStatus");
+  },
   methods: mapActions("user", ["handleLogin"]),
   computed: mapGetters({
     isLogging: "user/isLogging"
