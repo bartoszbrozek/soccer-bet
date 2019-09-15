@@ -1,6 +1,7 @@
 import FirebaseHelper from '../../helpers/firebase'
 import {
-    vm
+    vm,
+    toast
 } from '@/main'
 
 const Firebase = FirebaseHelper.firebase
@@ -22,7 +23,8 @@ const state = {
     currentRoom: {
         name: "",
         description: "",
-        uid: ""
+        uid: "",
+        minutes: []
     },
     bets: {},
     newMinute: null
@@ -215,32 +217,50 @@ const actions = {
     },
 
     addMinute({
-        commit,
-        rootState
-    }, roomID) {
+        commit
+    }, room) {
         commit("isAddingNewMinute", true)
 
-        var user = rootState.user.user
-
-        Firebase.database().ref('rooms/' + roomID.id + '/minutes/' + state.newMinute).set({
+        Firebase.database().ref('rooms/' + room.id + '/minutes/' + state.newMinute).set({
             timestamp: Date.now()
         }, error => {
             commit("isAddingNewMinute", false)
 
             if (error) {
-                console.log(error)
-            } else {
-                // Also, add a new user
-                Firebase.database().ref('users/' + user.uid).set(user, error => {
-                    if (error) {
-                        console.log(error)
-                    }
-                });
+                toast.open({
+                    message: 'Something went wrong',
+                    type: 'is-danger'
+                })
             }
         });
 
+        toast.open({
+            message: 'Minute Added',
+            type: 'is-success'
+        })
+
         commit("updateNewMinute", null)
     },
+
+    removeMinute({commit}, data) {
+        var roomID = data.id
+        var minute = data.minute
+
+        Firebase.database().ref('rooms/' + roomID + '/minutes/' + minute).set(null, error => {
+
+            if (error) {
+                toast.open({
+                    message: 'Something went wrong',
+                    type: 'is-danger'
+                })
+            }
+        });
+
+        toast.open({
+            message: 'Minute Removed',
+            type: 'is-success'
+        })
+    }
 }
 
 // mutations

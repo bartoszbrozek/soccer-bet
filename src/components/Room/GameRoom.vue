@@ -1,20 +1,29 @@
 <template>
   <div>
-    <div class="level">
-      <section>
-        <h1 class="title">Room {{currentRoom.name}}</h1>
-      </section>
-    </div>
-    <div class="level" v-if="currentRoom.description">
-      <section>
-        <h2 class="subtitle">{{currentRoom.description}}</h2>
-      </section>
-    </div>
+    <div class="columns">
+      <div class="column">
+        <div class="level">
+          <section>
+            <h1 class="title">Room {{currentRoom.name}}</h1>
+          </section>
+        </div>
+        <div class="level" v-if="currentRoom.description">
+          <section>
+            <h2 class="subtitle">{{currentRoom.description}}</h2>
+          </section>
+        </div>
 
-    <div class="level">
-      <section>
-        <b-tag type="is-primary" v-if="currentUserIsRoomOwner">You Are Room Owner</b-tag>
-      </section>
+        <div class="level">
+          <section>
+            <b-tag type="is-primary" v-if="currentUserIsRoomOwner">You Are Room Owner</b-tag>
+          </section>
+        </div>
+      </div>
+
+      <div class="column">
+        <h2 class="subtitle">Minutes</h2>
+        <RoomMinutesBadges :id="id" :minutes="currentRoom.minutes" />
+      </div>
     </div>
 
     <div class="level" v-if="currentUserIsRoomOwner">
@@ -33,10 +42,16 @@ import { mapActions, mapGetters } from "vuex";
 import GameRoomForm from "./Forms/GameRoomForm";
 import CurrentGameTable from "./Tables/CurrentGameTable";
 import AddMinuteModal from "./Modals/AddMinuteModal";
+import RoomMinutesBadges from "./Info/RoomMinutesBadges";
 
 export default {
   name: "GameRoom",
-  components: { GameRoomForm, CurrentGameTable, AddMinuteModal },
+  components: {
+    GameRoomForm,
+    CurrentGameTable,
+    AddMinuteModal,
+    RoomMinutesBadges
+  },
   props: ["id"],
   data() {
     return {

@@ -69,8 +69,10 @@ const vm = new Vue({
   render: h => h(App),
 }).$mount('#app')
 
+const toast = vm.$buefy.toast
 
 
 export {
-  vm
+  vm,
+  toast
 }
