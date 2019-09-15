@@ -10,6 +10,7 @@ const state = {
     password: "",
     description: "",
     isAddingNewRoom: false,
+    isAddingNewMinute: false,
 
     // Available Rooms
     rooms: [],
@@ -20,15 +21,20 @@ const state = {
     isAcceptingMinutes: false,
     currentRoom: {
         name: "",
-        description: ""
+        description: "",
+        uid: ""
     },
-    bets: {}
+    bets: {},
+    newMinute: null
 }
 
 // getters
 const getters = {
     isAddingNewRoom: (state) => {
         return state.isAddingNewRoom
+    },
+    isAddingNewMinute: (state) => {
+        return state.isAddingNewMinute
     },
     getRooms: (state) => {
         var obj = state.rooms
@@ -52,8 +58,6 @@ const getters = {
             return obj[key];
         });
 
-        console.log("CURRENT BETs", state.bets)
-
         return bets
     },
     getMyBet: (state) => {
@@ -76,6 +80,12 @@ const getters = {
         }
 
         return myBet;
+    },
+    currentUserIsRoomOwner: (state) => {
+        var currentRoom = state.currentRoom
+        var currentUser = vm.$store.getters['user/getData']
+
+        return currentRoom.uid === currentUser.uid;
     }
 }
 
@@ -202,7 +212,35 @@ const actions = {
                 }
             })
         })
-    }
+    },
+
+    addMinute({
+        commit,
+        rootState
+    }, roomID) {
+        commit("isAddingNewMinute", true)
+
+        var user = rootState.user.user
+
+        Firebase.database().ref('rooms/' + roomID.id + '/minutes/' + state.newMinute).set({
+            timestamp: Date.now()
+        }, error => {
+            commit("isAddingNewMinute", false)
+
+            if (error) {
+                console.log(error)
+            } else {
+                // Also, add a new user
+                Firebase.database().ref('users/' + user.uid).set(user, error => {
+                    if (error) {
+                        console.log(error)
+                    }
+                });
+            }
+        });
+
+        commit("updateNewMinute", null)
+    },
 }
 
 // mutations
@@ -231,11 +269,17 @@ const mutations = {
     isAcceptingMinutes(state, value) {
         state.isAcceptingMinutes = value
     },
+    isAddingNewMinute(state, value) {
+        state.isAddingNewMinute = value
+    },
     updateFirstMinute(state, value) {
         state.firstMinute = value
     },
     updateSecondMinute(state, value) {
         state.secondMinute = value
+    },
+    updateNewMinute(state, value) {
+        state.newMinute = value
     },
 }
 
