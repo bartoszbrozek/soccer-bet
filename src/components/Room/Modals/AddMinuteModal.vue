@@ -1,6 +1,6 @@
 <template>
   <section>
-    <button class="button is-secondary is-medium" @click="isComponentModalActive = true">Add Minute</button>
+    <button class="button is-secondary" @click="isComponentModalActive = true">Add Minute</button>
 
     <b-modal :active.sync="isComponentModalActive" has-modal-card ref="dupa">
       <div class="modal-card">

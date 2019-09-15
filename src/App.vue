@@ -12,6 +12,8 @@
         </template>
         <template slot="start">
           <b-navbar-item tag="router-link" to="/homepage" type="is-link">Homepage</b-navbar-item>
+          <b-navbar-item tag="router-link" to="/leaderboard" type="is-link">Leaderboard</b-navbar-item>
+          <b-navbar-item tag="router-link" to="/room/existing" type="is-link">Rooms</b-navbar-item>
           <b-navbar-dropdown label="Info">
             <b-navbar-item href="#">About</b-navbar-item>
             <b-navbar-item href="#">Contact</b-navbar-item>
@@ -36,12 +38,34 @@
             </div>
           </b-navbar-item>
         </template>
-
       </b-navbar>
 
       <div class="notification">
         <router-view></router-view>
       </div>
+      <footer class="footer">
+        <div class="content has-text-centered">
+          <p>
+            <section>
+            <strong>Opońskie Zakłady</strong> by
+            <a href="https://zaglada.bandcamp.com" target="_blank">Bartosz Brożek</a>. Bawcie się dobrze i nie stękajcie za bardzo, bo to jest dopiero wersja
+            <i>alpha</i>.
+
+            </section>
+            <section>
+
+            <span>
+              Source Code:
+              <a
+                href="https://github.com/bartoszbrozek/soccer-bet"
+                target="_blank"
+              >GitHub</a>
+            </span>
+            </section>
+
+          </p>
+        </div>
+      </footer>
     </div>
   </div>
 </template>

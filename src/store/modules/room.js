@@ -129,7 +129,6 @@ const actions = {
     getRooms({
         commit
     }) {
-
         // Join two tables and Listen for changes
         var rooms = Firebase.database().ref('rooms');
         var users = Firebase.database().ref('users');
@@ -190,8 +189,7 @@ const actions = {
         });
     },
     getBets({
-        commit,
-        rootState
+        commit
     }, roomID) {
         commit("setBets", [])
         var betsTable = Firebase.database().ref('bets');
@@ -242,7 +240,9 @@ const actions = {
         commit("updateNewMinute", null)
     },
 
-    removeMinute({commit}, data) {
+    removeMinute({
+        commit
+    }, data) {
         var roomID = data.id
         var minute = data.minute
 

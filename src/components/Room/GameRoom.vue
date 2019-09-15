@@ -22,12 +22,13 @@
 
       <div class="column">
         <h2 class="subtitle">Minutes</h2>
+
+        <div class="level" v-if="currentUserIsRoomOwner">
+          <AddMinuteModal :id="id"></AddMinuteModal>
+        </div>
+
         <RoomMinutesBadges :id="id" :minutes="currentRoom.minutes" />
       </div>
-    </div>
-
-    <div class="level" v-if="currentUserIsRoomOwner">
-      <AddMinuteModal :id="id"></AddMinuteModal>
     </div>
 
     <div class="container">

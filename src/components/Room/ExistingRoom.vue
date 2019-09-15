@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>List of existing rooms</h2>
+    <h1 class="title">List of existing rooms</h1>
     <ExistingRoomsTable></ExistingRoomsTable>
   </div>
 </template>
