@@ -7,8 +7,12 @@ import {
 const Firebase = FirebaseHelper.firebase
 
 const state = {
-    leaderboard: []
+    leaderboard: [],
+    isLeaderboardRefreshing: false
 }
+
+const PERFECT_MINUTE_HIT_POINTS = 2
+const NEAR_MINUTE_HIT_POINTS = 1
 
 // getters
 const getters = {
@@ -20,6 +24,9 @@ const getters = {
         });
 
         return leaderboard
+    },
+    isLeaderboardRefreshing: (state) => {
+        return state.isLeaderboardRefreshing
     }
 }
 
@@ -29,19 +36,25 @@ const actions = {
         dispatch,
         commit
     }) {
-        commit("updateLeaderboard", [])
-        dispatch("fetchLeaderboardFromAPI")
+        dispatch("fetchLeaderboardFromAPI").then(function () {
+            toast.open({
+                message: "Data Refreshed",
+                type: "is-success"
+            })
+        })
     },
     fetchLeaderboardFromAPI({
         commit
     }) {
+
         // Join two tables and Listen for changes
         var roomsTable = Firebase.database().ref('rooms');
         var usersTable = Firebase.database().ref('users');
         var betsTable = Firebase.database().ref('bets');
         var users = []
 
-         usersTable.on('value', function (snapshot) {
+        usersTable.once('value').then(function (snapshot) {
+
             var usersTmp = snapshot.val()
 
             Object.keys(usersTmp).map(function (key) {
@@ -49,7 +62,7 @@ const actions = {
                 users[key] = usersTmp[key]
             })
 
-            roomsTable.on('value', function (snapshot) {
+            roomsTable.once('value').then(function (snapshot) {
                 let snapshotRooms = snapshot.val()
 
                 Object.keys(snapshotRooms).map(function (key) {
@@ -61,7 +74,7 @@ const actions = {
                     }
 
                     // JOIN WITH BETS
-                    betsTable.child(roomID).on('value', function (betsSnapshoot) {
+                    betsTable.child(roomID).once('value').then(function (betsSnapshoot) {
                         var bets = betsSnapshoot.val()
 
                         if (bets) {
@@ -70,11 +83,21 @@ const actions = {
                                 var bet = bets[key]
 
                                 Object.keys(minutesInRoom).map((minute) => {
-                                    if (minute === bet.firstMinute) {
-                                        users[uid].score += 1
+                                    minute = parseInt(minute)
+                                    bet.firstMinute = parseInt(bet.firstMinute)
+                                    bet.secondMinute = parseInt(bet.secondMinute)
+                                    if (minute === bet.firstMinute || minute === bet.secondMinute) {
+                                        users[uid].score += PERFECT_MINUTE_HIT_POINTS
+                                    } else if (
+                                        minute - 1 === bet.firstMinute ||
+                                        minute + 1 === bet.firstMinute ||
+                                        minute - 1 === bet.secondMinute ||
+                                        minute + 1 === bet.secondMinute
+                                    ) {
+                                        users[uid].score += NEAR_MINUTE_HIT_POINTS
                                     }
 
-                                      commit("updateLeaderboard", users)
+                                    commit("updateLeaderboard", users)
                                 })
                             });
                         }
@@ -92,9 +115,11 @@ const actions = {
 // mutations
 const mutations = {
     updateLeaderboard(state, leaderboard) {
-        console.log("UPDATE LEADERBOARD", leaderboard)
         state.leaderboard = leaderboard
     },
+    isLeaderboardRefreshing(state, value) {
+        state.isLeaderboardRefreshing = value
+    }
 }
 
 export default {

@@ -51,7 +51,16 @@ export default {
     };
   },
   mounted: function() {
-    this.$store.dispatch("leaderboard/fetchLeaderboard").then((data) => {console.log(data)});
+    var self = this
+    this.$store.dispatch("leaderboard/fetchLeaderboard").then(function() {
+      self.$emit("tableRefreshed");
+    });
+
+    this.$parent.$on("refreshTable", function() {
+      this.$store.dispatch("leaderboard/fetchLeaderboard").then(function() {
+        self.$emit("tableRefreshed");
+      });
+    });
   },
   computed: mapGetters({
     data: "leaderboard/getLeaderboard"
